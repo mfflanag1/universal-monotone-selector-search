@@ -1,0 +1,29 @@
+{
+  "status": "k23_common_core_exact",
+  "masks": [
+    4,
+    21,
+    7,
+    13,
+    1,
+    11
+  ],
+  "balanced_vertex_count": 1291,
+  "varying_sink_coordinates": [
+    7,
+    13,
+    15,
+    21,
+    23,
+    29
+  ],
+  "envelope_assignment_count": 4719,
+  "solved": 4719,
+  "maximum_balanced_worth_float": 1.0000000000001446,
+  "exact_certificate_count": 4719,
+  "exact_failure_count": 0,
+  "first_exact_failures": [],
+  "exact_reconstruction_max_denominator": 10000,
+  "common_core_gap_exact": "0",
+  "elapsed_seconds": 36.180884167028125
+}

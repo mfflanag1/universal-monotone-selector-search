@@ -1,0 +1,29 @@
+{
+  "status": "exact_dual_terminal_report",
+  "terminals": [
+    {
+      "node": 0,
+      "scaled_divergence": ["2", "1", "0", "2", "1"],
+      "signed_indicator": false,
+      "coefficient": null,
+      "coalition": null
+    },
+    {
+      "node": 1,
+      "scaled_divergence": ["-2", "-1", "0", "-2", "-1"],
+      "signed_indicator": false,
+      "coefficient": null,
+      "coalition": null
+    }
+  ],
+  "terminal_path_decomposition": [
+    {"player": 0, "source": 0, "sink": 1, "scaled_flow": "1", "path": [0, 1]},
+    {"player": 1, "source": 0, "sink": 1, "scaled_flow": "1", "path": [0, 1]},
+    {"player": 3, "source": 0, "sink": 1, "scaled_flow": "1", "path": [0, 1]},
+    {"player": 4, "source": 0, "sink": 1, "scaled_flow": "1", "path": [0, 1]},
+    {"player": 0, "source": 1, "sink": 0, "scaled_flow": "1", "path": [1, 0]},
+    {"player": 1, "source": 1, "sink": 0, "scaled_flow": "1", "path": [1, 0]},
+    {"player": 2, "source": 1, "sink": 0, "scaled_flow": "1", "path": [1, 0]},
+    {"player": 4, "source": 1, "sink": 0, "scaled_flow": "1", "path": [1, 0]}
+  ]
+}

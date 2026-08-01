@@ -1,0 +1,22 @@
+{
+  "status": "cross_cosingleton_branch_sweep_exact",
+  "representation_counts": [
+    397,
+    397
+  ],
+  "solved_branch_pairs": 157609,
+  "total_branch_pairs": 157609,
+  "maximum_float": 2.8892443992845074e-12,
+  "worst_pair": [
+    344,
+    340
+  ],
+  "positive_count_at_1e-8": 0,
+  "exact_audit_requested": true,
+  "exact_certificate_count": 157609,
+  "exact_failure_count": 0,
+  "first_exact_failures": [],
+  "exact_reconstruction_max_denominator": 100000,
+  "exact_global_upper_bound": "0",
+  "elapsed_seconds": 618.9679357089917
+}
