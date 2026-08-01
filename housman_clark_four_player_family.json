@@ -1,0 +1,19 @@
+{
+  "status": "housman_clark_four_player_family",
+  "parameters": {"a": 4, "b": 3, "c": 3},
+  "family": {
+    "games": [
+      [0, 0, 0, 0, 0, 4, 3, 4, 0, 3, 4, 4, 0, 4, 4, 8],
+      [0, 0, 0, 0, 0, 4, 3, 8, 0, 3, 4, 4, 0, 4, 4, 8],
+      [0, 0, 0, 0, 0, 4, 3, 4, 0, 3, 4, 8, 0, 4, 4, 8],
+      [0, 0, 0, 0, 0, 4, 3, 4, 0, 3, 4, 4, 0, 8, 4, 8],
+      [0, 0, 0, 0, 0, 4, 3, 4, 0, 3, 4, 4, 0, 4, 8, 8]
+    ],
+    "edges": [
+      {"lower": 0, "upper": 1, "coalition": 7, "delta": "4"},
+      {"lower": 0, "upper": 2, "coalition": 11, "delta": "4"},
+      {"lower": 0, "upper": 3, "coalition": 13, "delta": "4"},
+      {"lower": 0, "upper": 4, "coalition": 14, "delta": "4"}
+    ]
+  }
+}
