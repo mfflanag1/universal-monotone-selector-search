@@ -124,6 +124,299 @@ Hence every common-sink indicator join also has nonpositive objective:
 \boxed{\sum_k\underline E_k(d_k)\le0.}
 \]
 
+## Protected block-flow forest theorem
+
+There is a broader decomposition that permits arbitrarily many mixed
+transshipment nodes.  Replace every protected player flow by a source-to-sink
+path decomposition.  Group paths with the same endpoints, mass, and player
+set into abstract arcs
+
+\[
+e:u\longrightarrow v,qquad a_e\mathbf1_{B_e},quad a_e>0,
+\]
+
+where every player in \(B_e\) has a directed protected path from game \(u\)
+to game \(v\).  Regard parallel block arcs as distinct edges.  If the
+underlying undirected multigraph of these abstract arcs is a forest, then
+
+\[
+\boxed{\sum_k\underline E_k(d_k)\le0.}
+\]
+
+**Proof.**  Contract leaves.  If a leaf \(u\) is the source of its unique
+incident block arc \(e:u\to v\), then
+
+\[
+\underline E_u(a_e\mathbf1_{B_e})
+=a_ev^u(B_e)\le a_ev^v(B_e)
+=\underline E_v(a_e\mathbf1_{B_e}).
+\]
+
+Let \(d_v\) be the old divergence at \(v\).  Deleting \(u\) and \(e\)
+changes the divergence at \(v\) to
+\(d'_v=d_v+a_e\mathbf1_{B_e}\).  Superadditivity of lower expectation gives
+
+\[
+\underline E_v(d'_v)
+\ge \underline E_v(d_v)
+  +\underline E_v(a_e\mathbf1_{B_e}),
+\]
+
+so replacing the leaf and its neighbor by the contracted neighbor can only
+increase the objective.
+
+If the unique incident arc is instead \(e:v\to u\), exactness,
+protected-path invariance, and grand-worth monotonicity give
+
+\[
+\begin{aligned}
+\underline E_u(-a_e\mathbf1_{B_e})
+&=a_e\left[v^u(N\setminus B_e)-G_u\right]\\
+&\le a_e\left[v^v(N\setminus B_e)-G_v\right]\\
+&=\underline E_v(-a_e\mathbf1_{B_e}).
+\end{aligned}
+\]
+
+Now deleting the leaf changes the neighbor divergence to
+\(d'_v=d_v-a_e\mathbf1_{B_e}\), and the same superadditivity argument applies.
+Iterating leaves reduces every tree component to one node with zero
+divergence and lower expectation zero.  Since every contraction upper-bounds
+the previous objective, the original objective is nonpositive. \(\square\)
+
+The multigraph qualification matters.  Two differently weighted or
+differently supported blocks with the same endpoints are parallel edges and
+already create cycle rank one unless they can be combined into a single
+indicator block.  Thus the theorem does not silently split an aggregated
+terminal lower expectation into separate terms; that split would have the
+wrong inequality direction.
+
+This theorem puts a sharp topological condition on any counterexample:
+after every possible grouping of equal-mass protected player paths, its
+terminal path multigraph must contain an undirected cycle.  The exhaustive
+two-source/two-sink class below is exactly the first fully interlocking
+four-cycle beyond this forest theorem.
+
+## Alternating protected-cycle theorem
+
+The forest condition can be relaxed for source-to-sink block-flow graphs of
+maximum degree two.  Every alternating cycle is also harmless, for arbitrary
+player count, arbitrary overlapping blocks, arbitrary positive edge weights,
+and arbitrary grand-worth increases along the protected paths.
+
+Index sources and sinks cyclically.  Source \(r_j\) sends
+\(a_j\mathbf1_{A_j}\) to its matched sink \(q_j\), and sends
+\(b_j\mathbf1_{B_j}\) to \(q_{j-1}\).  Pair the source and sink terms across
+the matched \(A_j\)-arc.  Exactness at \(B_j\) and at
+\(N\setminus A_j\), followed by protected-path invariance, gives
+
+\[
+\begin{aligned}
+\underline E_{r_j}(d_{r_j})+
+\underline E_{q_j}(d_{q_j})
+\le{}&b_jv^{r_j}(B_j)
+-b_{j+1}v^{q_j}(B_{j+1})\\
+&+a_j(G_{r_j}-G_{q_j}).
+\end{aligned}
+\]
+
+The grand term is nonpositive.  Monotonicity along the unmatched
+\(B_j\)-path bounds \(v^{r_j}(B_j)\) by
+\(v^{q_{j-1}}(B_j)\), so the block-worth terms telescope around the cycle.
+Therefore
+
+\[
+\boxed{\sum_k\underline E_k(d_k)\le0.}
+\]
+
+Together with leaf contraction from the forest theorem, this closes every
+protected block-flow pseudoforest: each component may contain at most one
+independent undirected cycle, with arbitrary trees attached.  A complete
+proof is recorded in `ALTERNATING_CYCLE_NO_GO_RESULT.md`.
+
+## Sharp five-player K2,3 common-core classification
+
+The first irreducible cycle-rank-two class is also exactly safe at common
+grand worth. Consider unit protected flows on a \(K_{2,3}\) with two
+degree-three sources and three degree-two sinks. Require every source to have
+all four incidence levels, every pair within either source row to have sharp
+five-player premium \(1/2\), every sink to have sharp premium \(1/2\), the
+union of the six blocks to be \(N\), and their intersection to be empty.
+
+There are 4,440 configurations after normalizing the sink labels against the
+first source row, and exactly 20 orbits after player, source, and sink
+symmetries. For every orbit and every common-grand monotone exact realization,
+
+\[
+\boxed{\bigcap_{k=0}^4 C(v^k)\ne\varnothing.}
+\]
+
+The proof passes to the pointwise worth envelope of the three sink games.
+Protected invariance leaves only two through six sink coordinates that can
+differ. The five-player balanced-weight polytope has exactly 1,291 extreme
+points, enumerated with integer determinants and Cramer's rule. Expanding the
+remaining envelope maxima gives 66,108 linear cases across the 20 orbits.
+Every case has an exact rational dual bound equal to the grand worth, with
+zero reconstruction failures. Thus every sink envelope is balanced, its core
+is the common intersection of the three sink cores, and sink dominance places
+that same point in both source cores.
+
+A common core point makes every zero-sum terminal divergence safe, not merely
+the unit divergence used to identify the topology. The full statement and
+reproduction commands are in `N5_K23_COMMON_CORE_RESULT.md`.
+
+## Single mixed-hub theorem
+
+The fork and join proofs are the two degenerate cases of a stronger local
+result.  Let distinct indicator sources \(r_j\) feed one hub \(h\), and let
+the hub feed distinct indicator sinks \(q_\ell\).  Source \(r_j\) transports
+the block \(B_j\) with mass \(a_j>0\) to \(h\); the hub transports the block
+\(C_\ell\) with mass \(b_\ell>0\) to \(q_\ell\).  Every transported player
+has a directed protected path between the stated endpoints.  The
+divergences are
+
+\[
+d_{r_j}=a_j\mathbf1_{B_j},\qquad
+d_h=\sum_\ell b_\ell\mathbf1_{C_\ell}
+      -\sum_j a_j\mathbf1_{B_j},\qquad
+d_{q_\ell}=-b_\ell\mathbf1_{C_\ell}.
+\]
+
+Then, even though \(d_h\) may have several levels and mixed signs,
+
+\[
+\boxed{\sum_k\underline E_k(d_k)\le0.}
+\]
+
+Indeed, directed worth monotonicity from \(r_j\) to \(h\) gives
+
+\[
+\underline E_{r_j}(a_j\mathbf1_{B_j})
+=a_jv^{r_j}(B_j)\le a_jv^h(B_j).
+\]
+
+Protected-path invariance and grand-worth monotonicity from \(h\) to
+\(q_\ell\) give
+
+\[
+\begin{aligned}
+\underline E_{q_\ell}(-b_\ell\mathbf1_{C_\ell})
+&=b_\ell\left[v^{q_\ell}(N\setminus C_\ell)-G_{q_\ell}\right]\\
+&\le b_\ell\left[v^h(N\setminus C_\ell)-G_h\right].
+\end{aligned}
+\]
+
+Choose \(x\in C(h)\) minimizing \(d_h\cdot x\).  Core feasibility implies
+
+\[
+v^h(B_j)\le x(B_j),\qquad
+v^h(N\setminus C_\ell)-G_h\le-x(C_\ell).
+\]
+
+Consequently all non-hub terms sum to at most \(-d_h\cdot x\), while the
+hub term is exactly \(d_h\cdot x\).  Their total is nonpositive.
+
+This is also the star-shaped case of the protected block-flow forest theorem.
+The direct proof remains useful because it shows explicitly how one hub core
+allocation absorbs an arbitrary mixed divergence.  A large non-additivity
+premium at one mixed node cannot by itself produce a counterexample.  The
+requirement that each terminal divergence be one signed indicator is
+substantive, because lower expectation is superadditive and a terminal
+carrying several parallel blocks cannot generally be split without loss.
+
+## Complete-bipartite sink-overlap reduction
+
+There is a dimension-free reduction for every two-source/two-sink protected
+flow, even when all four terminal divergences are mixed.  Let sources
+(s_0,s_1) feed both sinks (t_2,t_3), and let the four divergences sum to
+zero.  Pointwise game monotonicity gives (s_0\le t_2) and (s_1\le t_2),
+so monotonicity and superadditivity of lower expectation imply
+
+\[
+\begin{aligned}
+\sum_k\underline E_k(d_k)
+&\le \underline E_{t_2}(d_{s_0})
+ +\underline E_{t_2}(d_{s_1})
+ +\underline E_{t_2}(d_{t_2})
+ +\underline E_{t_3}(d_{t_3})\\
+&\le \underline E_{t_2}(-d_{t_3})
+ +\underline E_{t_3}(d_{t_3}).
+\end{aligned}
+\]
+
+The last expression is nonpositive exactly when the scalar ranges overlap:
+
+\[
+\min_{x\in C(t_2)}(-d_{t_3})\cdot x
+\le
+\max_{y\in C(t_3)}(-d_{t_3})\cdot y.
+\]
+
+Thus a (K_{2,2}) counterexample requires two incomparable sink cores whose
+relevant one-dimensional projections are strictly separated in the wrong
+order.  The symmetric reduction through (t_3) gives a second necessary
+separation condition involving (d_{t_2}).  This replaces a four-game mixed
+optimization by two paired-core interval tests.  The Johnson theorem below
+proves the required overlap for the first maximally dangerous five-player
+instance.
+
+## Exact five-player Johnson-square theorem
+
+The first maximally dangerous cycle beyond the forest theorem is also safe.
+On players (0,1,2,3,4), take the four protected blocks
+
+\[
+012,\quad013,\quad024,\quad034
+\]
+
+on a directed (K_{2,2}) from sources (s_0,s_1) to sinks (t_2,t_3), in
+row-major order.  The resulting divergences are
+
+\[
+\begin{aligned}
+d_{s_0}&=(2,2,1,1,0),&d_{s_1}&=(2,0,1,1,2),\\
+d_{t_2}&=(-2,-1,-2,0,-1),&d_{t_3}&=(-2,-1,0,-2,-1).
+\end{aligned}
+\]
+
+All four have sharp local five-player premium (1/2), yet
+
+\[
+\boxed{\sum_k\underline E_k(d_k)\le0.}
+\]
+
+The protected equalities force the games to agree except at four
+co-singletons: one relaxed coordinate private to each source and one tightened
+coordinate private to each sink.  In particular, (t_2,t_3) differ only at
+(A=N\setminus\{2\}) and (B=N\setminus\{3\}), with opposite directions.
+For (e=(2,1,0,2,1)=-d_{t_3}), an exact exhaustive certificate proves the
+cross-cosingleton swap inequality
+
+\[
+\underline E_{t_2}(e)+\underline E_{t_3}(-e)\le0.
+\]
+
+Indeed, each lower expectation has 397 extreme core-dual representations.
+All (397^2=157{,}609) affine branch pairs have exact rational dual upper
+bounds zero over the complete paired monotone exact-game polytope.  The
+verifier found zero failures; floating residuals are not used as proof.
+
+Finally, game monotonicity and lower-expectation superadditivity give
+
+\[
+\begin{aligned}
+\sum_k\underline E_k(d_k)
+&\le \underline E_{t_2}(d_{s_0})
+ +\underline E_{t_2}(d_{s_1})
+ +\underline E_{t_2}(d_{t_2})
+ +\underline E_{t_3}(d_{t_3})\\
+&\le \underline E_{t_2}(e)+\underline E_{t_3}(-e)\le0.
+\end{aligned}
+\]
+
+The full derivation and reproduction command are in
+`N5_JOHNSON_SQUARE_NO_GO_RESULT.md`; the exact run summary is
+`results/n5_cross_cosingleton_branch_sweep_exact.json`.
+
 ## Block-transport theorem for several sources and sinks
 
 The fork and join arguments extend to a genuinely multi-source/multi-sink
@@ -682,12 +975,13 @@ cross-resolution dual. It explains why:
 
 It does **not** prove the universal selector theorem or even the
 all-signed-indicator conjecture. A remaining counterexample must avoid
-decomposition into these pieces and could use:
+decomposition into these pieces.  In particular, its reduced protected
+block-flow component must have cycle rank at least two.  It could use:
 
 - several interlocking sources and sinks with no star decomposition;
 - mixed, non-indicator divergence vectors at multiple internal nodes;
-- coupled branch-and-rejoin networks not decomposable into the fork/join
-  patterns above; or
-- varying grand worths with a genuinely non-product aggregate topology.
+- coupled branch-and-rejoin networks not decomposable into the fork/join or
+  pseudoforest patterns above; or
+- varying grand worths combined with one of those higher-rank topologies.
 
 Those are the topology classes that future searches should target.
