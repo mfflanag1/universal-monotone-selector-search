@@ -14,7 +14,14 @@ import numpy as np
 from scipy.optimize import Bounds, LinearConstraint, milp
 from scipy.sparse import coo_matrix
 
-from n5_mixed_terminal_search import GameCone, Topology, four_cycle_topology
+from n5_mixed_terminal_search import (
+    cross_cosingleton_swap_topology,
+    complete_bipartite_rectangular_topology,
+    GameCone,
+    Topology,
+    four_cycle_topology,
+    johnson_square_topology,
+)
 
 
 F = Fraction
@@ -165,7 +172,9 @@ def lower_dual_vertices(
     return list(vertices.values())
 
 
-def solve(topology: Topology, n: int) -> dict[str, Any]:
+def solve(
+    topology: Topology, n: int, time_limit: float = 600.0
+) -> dict[str, Any]:
     cone = GameCone(n, topology)
     candidate_sets = [
         lower_dual_vertices(divergence, n)
@@ -269,7 +278,7 @@ def solve(topology: Topology, n: int) -> dict[str, Any]:
         constraints=LinearConstraint(
             matrix, np.asarray(lower_bounds), np.asarray(upper_bounds)
         ),
-        options={"time_limit": 600.0, "mip_rel_gap": 0.0},
+        options={"time_limit": time_limit, "mip_rel_gap": 0.0},
     )
     payload: dict[str, Any] = {
         "status": "optimal" if result.success else "incomplete",
@@ -280,6 +289,11 @@ def solve(topology: Topology, n: int) -> dict[str, Any]:
         "arcs": [list(arc) for arc in topology.arcs],
         "divergence": [list(vector) for vector in topology.divergence],
         "mip_gap": getattr(result, "mip_gap", None),
+        "mip_dual_bound": (
+            None
+            if getattr(result, "mip_dual_bound", None) is None
+            else -float(result.mip_dual_bound)
+        ),
         "mip_node_count": getattr(result, "mip_node_count", None),
     }
     if result.x is not None:
@@ -345,16 +359,28 @@ def main() -> int:
     parser.add_argument("--weights", type=int, nargs=4, default=(1, 2, 2, 1))
     parser.add_argument("--complementary-mixed-fork", action="store_true")
     parser.add_argument("--hourglass-masks", type=int, nargs=4)
+    parser.add_argument("--johnson-square", action="store_true")
+    parser.add_argument("--cross-cosingleton-swap", action="store_true")
+    parser.add_argument("--k23-masks", type=int, nargs=6)
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--time-limit", type=float, default=600.0)
     args = parser.parse_args()
     topology = (
-        indicator_hourglass_topology(tuple(args.hourglass_masks), 5)
+        complete_bipartite_rectangular_topology(
+            tuple(args.k23_masks), (1,) * 6, 2, 3, 5
+        )
+        if args.k23_masks is not None
+        else cross_cosingleton_swap_topology(5)
+        if args.cross_cosingleton_swap
+        else johnson_square_topology(5)
+        if args.johnson_square
+        else indicator_hourglass_topology(tuple(args.hourglass_masks), 5)
         if args.hourglass_masks is not None
         else complementary_mixed_fork_topology(5)
         if args.complementary_mixed_fork
         else four_cycle_topology(tuple(args.weights), 5)
     )
-    payload = solve(topology, 5)
+    payload = solve(topology, 5, args.time_limit)
     if args.output is not None:
         args.output.write_text(json.dumps(payload, indent=2) + "\n")
     print(json.dumps(payload, indent=2))

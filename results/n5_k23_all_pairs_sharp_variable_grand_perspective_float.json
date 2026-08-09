@@ -1,0 +1,27 @@
+{
+  "status": "mixed_terminal_perspective_relaxation_float",
+  "source": "n5_k23_all_pairs_sharp_terminal_report.json",
+  "variable_grand": true,
+  "solver_method": "highs-ipm",
+  "terminal_count": 5,
+  "protected_terminal_pair_count": 6,
+  "mixed_terminal_count": 5,
+  "representation_counts": {
+    "0": 549,
+    "1": 549,
+    "2": 397,
+    "3": 397,
+    "4": 397
+  },
+  "variable_count": 75697,
+  "inequality_count": 830471,
+  "equality_count": 2603,
+  "maximum_lower_expectation_objective_float": -2.220446049250313e-16,
+  "nonzero_inequality_dual_count": 59404,
+  "nonzero_equality_dual_count": 265,
+  "dual_reconstruction_max_denominator_at_1e6": 999999,
+  "safe_for_every_terminal_realization": false,
+  "exact_dual_verified": false,
+  "exact_dual_certificate": null,
+  "interpretation": "The perspective variables continuously convexify every extreme core-dual branch at each genuinely mixed terminal. Every original terminal realization is feasible in this relaxation, so an exact nonpositive optimum is a topology-level no-go proof."
+}

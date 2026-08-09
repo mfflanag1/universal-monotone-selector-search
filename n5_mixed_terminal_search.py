@@ -48,7 +48,9 @@ class Topology:
 
 
 class GameCone:
-    def __init__(self, n: int, topology: Topology) -> None:
+    def __init__(
+        self, n: int, topology: Topology, variable_grand: bool = False
+    ) -> None:
         self.n = n
         self.grand = (1 << n) - 1
         self.coalition_count = self.grand + 1
@@ -62,8 +64,14 @@ class GameCone:
         for node in range(self.node_count):
             self.equalities.append({self.column(node, 0): 1.0})
             self.equality_rhs.append(0.0)
-            self.equalities.append({self.column(node, self.grand): 1.0})
-            self.equality_rhs.append(1.0)
+            if variable_grand:
+                self.inequalities.append(
+                    {self.column(node, self.grand): 1.0}
+                )
+                self.inequality_rhs.append(1.0)
+            else:
+                self.equalities.append({self.column(node, self.grand): 1.0})
+                self.equality_rhs.append(1.0)
             for facet in facets:
                 self.inequalities.append(
                     {
@@ -210,14 +218,148 @@ def four_cycle_topology(weights: tuple[int, int, int, int], n: int) -> Topology:
     return Topology(4, arcs, tuple(tuple(vector) for vector in divergence))
 
 
+def johnson_square_topology(n: int) -> Topology:
+    """The J(5,3) square making all four terminal premiums sharp."""
+    if n != 5:
+        raise ValueError("the Johnson-square topology is five-player")
+    return block_square_topology((0b00111, 0b01011, 0b10101, 0b11001), n)
+
+
+def block_square_topology(
+    masks: tuple[int, int, int, int], n: int
+) -> Topology:
+    """A K2,2 protected-block cycle in row-major edge order."""
+    grand = (1 << n) - 1
+    if any(mask <= 0 or mask >= grand for mask in masks):
+        raise ValueError("block-square masks must be nonempty and proper")
+    arcs = tuple(
+        (lower, upper, protected)
+        for (lower, upper), protected in zip(
+            ((0, 2), (0, 3), (1, 2), (1, 3)), masks, strict=True
+        )
+    )
+    divergence = [[0] * n for _ in range(4)]
+    for lower, upper, protected in arcs:
+        for player in range(n):
+            if protected >> player & 1:
+                divergence[lower][player] += 1
+                divergence[upper][player] -= 1
+    return Topology(4, arcs, tuple(tuple(vector) for vector in divergence))
+
+
+def bipartite_six_cycle_topology(
+    masks: tuple[int, int, int, int, int, int], n: int
+) -> Topology:
+    """Alternating three-source/three-sink cycle with no universal hub."""
+    return weighted_bipartite_six_cycle_topology(
+        masks, (1, 1, 1, 1, 1, 1), n
+    )
+
+
+def weighted_bipartite_six_cycle_topology(
+    masks: tuple[int, int, int, int, int, int],
+    weights: tuple[int, int, int, int, int, int],
+    n: int,
+) -> Topology:
+    """Weighted alternating three-source/three-sink protected cycle."""
+    grand = (1 << n) - 1
+    if any(mask <= 0 or mask >= grand for mask in masks):
+        raise ValueError("six-cycle masks must be nonempty and proper")
+    if any(weight <= 0 for weight in weights):
+        raise ValueError("six-cycle weights must be positive")
+    endpoints = ((0, 3), (1, 3), (1, 4), (2, 4), (2, 5), (0, 5))
+    arcs = tuple(
+        (lower, upper, protected)
+        for (lower, upper), protected in zip(endpoints, masks, strict=True)
+    )
+    divergence = [[0] * n for _ in range(6)]
+    for (lower, upper, protected), weight in zip(arcs, weights, strict=True):
+        for player in range(n):
+            if protected >> player & 1:
+                divergence[lower][player] += weight
+                divergence[upper][player] -= weight
+    return Topology(6, arcs, tuple(tuple(vector) for vector in divergence))
+
+
+def complete_bipartite_topology(
+    masks: tuple[int, ...],
+    weights: tuple[int, ...],
+    side: int,
+    n: int,
+) -> Topology:
+    """Complete source/sink block flow in row-major source/sink order."""
+    return complete_bipartite_rectangular_topology(
+        masks, weights, side, side, n
+    )
+
+
+def complete_bipartite_rectangular_topology(
+    masks: tuple[int, ...],
+    weights: tuple[int, ...],
+    source_count: int,
+    sink_count: int,
+    n: int,
+) -> Topology:
+    """Rectangular complete source/sink block flow in row-major order."""
+    grand = (1 << n) - 1
+    if len(masks) != source_count * sink_count or len(weights) != len(masks):
+        raise ValueError("complete-bipartite data has the wrong entry count")
+    if any(mask <= 0 or mask >= grand for mask in masks):
+        raise ValueError("complete-bipartite masks must be nonempty and proper")
+    if any(weight <= 0 for weight in weights):
+        raise ValueError("complete-bipartite weights must be positive")
+    arcs = tuple(
+        (
+            source,
+            source_count + sink,
+            masks[source * sink_count + sink],
+        )
+        for source in range(source_count)
+        for sink in range(sink_count)
+    )
+    divergence = [[0] * n for _ in range(source_count + sink_count)]
+    for (lower, upper, protected), weight in zip(arcs, weights, strict=True):
+        for player in range(n):
+            if protected >> player & 1:
+                divergence[lower][player] += weight
+                divergence[upper][player] -= weight
+    return Topology(
+        source_count + sink_count,
+        arcs,
+        tuple(tuple(vector) for vector in divergence),
+    )
+
+
+def cross_cosingleton_swap_topology(n: int) -> Topology:
+    """Two-game interval-overlap reduction of the Johnson square.
+
+    Node 0 may exceed node 1 only at N\\{3}; node 1 may exceed node 0
+    only at N\\{2}.  The opposite divergences measure the two copies of
+    coalitions 013 and 034.  A nonpositive optimum for this relaxation is
+    sufficient to close the four-terminal Johnson square.
+    """
+    if n != 5:
+        raise ValueError("the cross-cosingleton swap is five-player")
+    grand = (1 << n) - 1
+    omit_2 = grand ^ (1 << 2)
+    omit_3 = grand ^ (1 << 3)
+    positive = (2, 1, 0, 2, 1)
+    return Topology(
+        2,
+        ((0, 1, omit_2), (1, 0, omit_3)),
+        (positive, tuple(-value for value in positive)),
+    )
+
+
 def optimize_topology(
     topology: Topology,
     n: int,
     rng: random.Random,
     starts: int,
     iterations: int,
+    variable_grand: bool = False,
 ) -> dict[str, Any] | None:
-    cone = GameCone(n, topology)
+    cone = GameCone(n, topology, variable_grand=variable_grand)
     grand = (1 << n) - 1
     proper = list(range(1, grand))
     best: dict[str, Any] | None = None
@@ -316,12 +458,81 @@ def main() -> int:
     parser.add_argument("--top", type=int, default=10)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--canonical-four-cycle-max-weight", type=int)
+    parser.add_argument("--johnson-square", action="store_true")
+    parser.add_argument("--cross-cosingleton-swap", action="store_true")
+    parser.add_argument("--block-square-masks", type=int, nargs=4)
+    parser.add_argument("--six-cycle-masks", type=int, nargs=6)
+    parser.add_argument("--six-cycle-weights", type=int, nargs=6)
+    parser.add_argument("--k33-masks", type=int, nargs=9)
+    parser.add_argument("--k33-weights", type=int, nargs=9)
+    parser.add_argument("--k23-masks", type=int, nargs=6)
+    parser.add_argument("--k23-weights", type=int, nargs=6)
+    parser.add_argument("--variable-grand", action="store_true")
     args = parser.parse_args()
+    if args.six_cycle_weights is not None and args.six_cycle_masks is None:
+        parser.error("--six-cycle-weights requires --six-cycle-masks")
+    if args.k33_weights is not None and args.k33_masks is None:
+        parser.error("--k33-weights requires --k33-masks")
+    if args.k23_weights is not None and args.k23_masks is None:
+        parser.error("--k23-weights requires --k23-masks")
     rng = random.Random(args.seed)
     tested = 0
     positive = 0
     best: list[dict[str, Any]] = []
-    if args.canonical_four_cycle_max_weight is not None:
+    if args.block_square_masks is not None:
+        candidates = iter(
+            (block_square_topology(tuple(args.block_square_masks), args.n),)
+        )
+        sample_target = 1
+    elif args.six_cycle_masks is not None:
+        weights = (
+            tuple(args.six_cycle_weights)
+            if args.six_cycle_weights is not None
+            else (1, 1, 1, 1, 1, 1)
+        )
+        candidates = iter(
+            (
+                weighted_bipartite_six_cycle_topology(
+                    tuple(args.six_cycle_masks), weights, args.n
+                ),
+            )
+        )
+        sample_target = 1
+    elif args.k33_masks is not None:
+        weights = (
+            tuple(args.k33_weights)
+            if args.k33_weights is not None
+            else (1,) * 9
+        )
+        candidates = iter(
+            (
+                complete_bipartite_topology(
+                    tuple(args.k33_masks), weights, 3, args.n
+                ),
+            )
+        )
+        sample_target = 1
+    elif args.k23_masks is not None:
+        weights = (
+            tuple(args.k23_weights)
+            if args.k23_weights is not None
+            else (1,) * 6
+        )
+        candidates = iter(
+            (
+                complete_bipartite_rectangular_topology(
+                    tuple(args.k23_masks), weights, 2, 3, args.n
+                ),
+            )
+        )
+        sample_target = 1
+    elif args.cross_cosingleton_swap:
+        candidates = iter((cross_cosingleton_swap_topology(args.n),))
+        sample_target = 1
+    elif args.johnson_square:
+        candidates = iter((johnson_square_topology(args.n),))
+        sample_target = 1
+    elif args.canonical_four_cycle_max_weight is not None:
         candidates: Any = (
             four_cycle_topology(weights, args.n)
             for weights in itertools.product(
@@ -347,6 +558,7 @@ def main() -> int:
             rng,
             args.starts,
             args.iterations,
+            args.variable_grand,
         )
         if optimum is None:
             continue
@@ -364,12 +576,21 @@ def main() -> int:
         "status": "mixed_terminal_coordinate_ascent_float",
         "n": args.n,
         "node_count": (
-            4
-            if args.canonical_four_cycle_max_weight is not None
+            2
+            if args.cross_cosingleton_swap
+            else 5
+            if args.k23_masks is not None
+            else 6
+            if args.six_cycle_masks is not None or args.k33_masks is not None
+            else 4
+            if args.johnson_square
+            or args.block_square_masks is not None
+            or args.canonical_four_cycle_max_weight is not None
             else args.nodes
         ),
         "tested_topologies": tested,
         "positive_topologies": positive,
+        "variable_grand": args.variable_grand,
         "best": best,
     }
     if args.output is not None:

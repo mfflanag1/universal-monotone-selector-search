@@ -1,0 +1,16 @@
+{
+  "status": "INFEASIBLE",
+  "n": 6,
+  "nodes": 4,
+  "game_denominator": 1,
+  "grand_maximum": 1,
+  "witness_denominator": 1,
+  "payoff_denominator": 1,
+  "flow_bound": 2,
+  "normal_bound": 4,
+  "complete_bipartite": true,
+  "hourglass": false,
+  "mixed_fork": false,
+  "complementary_mixed_fork": false,
+  "wall_time": 67.385627
+}

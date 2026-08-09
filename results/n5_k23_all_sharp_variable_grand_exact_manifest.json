@@ -1,0 +1,136 @@
+{
+  "status": "n5_k23_variable_grand_exact_certificate_batch_partial",
+  "classification": "results/n5_k23_all_sharp_common_core_classification_exact.json",
+  "symmetry_orbit_count": 20,
+  "selected_orbit_count": 20,
+  "verified_certificate_count": 3,
+  "failure_count": 17,
+  "exact_failure_count": null,
+  "all_terminal_objective_maxima_exact": null,
+  "orbits": [
+    {
+      "orbit": 0,
+      "masks": [
+        1,
+        7,
+        11,
+        7,
+        2,
+        19
+      ],
+      "disposition": "verified_existing",
+      "elapsed_seconds": 49.35871220799163,
+      "path": "results/n5_k23_orbit_00_variable_grand_envelope_exact.json",
+      "sha256": "703a02d8b354e9a9437d6c6272c6d66714a9069f840e1703459e4d6ade1b82c3",
+      "bytes": 22555661,
+      "mixed_branch_count": 2289,
+      "topology_projection_refinement_count": 10
+    },
+    {
+      "orbit": 1,
+      "masks": [
+        1,
+        7,
+        11,
+        7,
+        19,
+        2
+      ],
+      "disposition": "verified_existing",
+      "elapsed_seconds": 48.652518292015884,
+      "path": "results/n5_k23_orbit_01_variable_grand_envelope_exact.json",
+      "sha256": "00ddddd0e142d50f401889b2a11e866cb05c2dcf19b7a43aba9573516802050b",
+      "bytes": 21854660,
+      "mixed_branch_count": 2289,
+      "topology_projection_refinement_count": 7
+    },
+    {
+      "orbit": 2,
+      "masks": [
+        1,
+        7,
+        11,
+        7,
+        22,
+        2
+      ],
+      "disposition": "verified_existing",
+      "elapsed_seconds": 48.23421112500364,
+      "path": "results/n5_k23_orbit_02_variable_grand_envelope_exact.json",
+      "sha256": "232627c7ff89dccaf71c995e521af000944141695d68effd0eba701dd1bd6d7a",
+      "bytes": 21036062,
+      "mixed_branch_count": 2289,
+      "topology_projection_refinement_count": 10
+    }
+  ],
+  "failures": [
+    {
+      "orbit": 4,
+      "error": "CalledProcessError(1, ['/Users/maxf/miniforge3/bin/python', 'n5_k23_envelope_cegar.py', '/private/tmp/n5-k23-orbit-04.e41g42az/terminal_report.json', '--seed-reference', '/Users/maxf/Documents/Codex/2026-07-29/spend-10-hours-working-on-2/results/n5_k23_orbit_00_variable_grand_envelope_exact.json', '--output', '/private/tmp/n5-k23-orbit-04.e41g42az/envelope_cegar.json', '--iterations', '40', '--cuts-per-node', '20', '--tolerance', '1e-8'])"
+    },
+    {
+      "orbit": 5,
+      "error": "CalledProcessError(1, ['/Users/maxf/miniforge3/bin/python', 'n5_k23_envelope_cegar.py', '/private/tmp/n5-k23-orbit-05.eujxw8x8/terminal_report.json', '--seed-reference', '/Users/maxf/Documents/Codex/2026-07-29/spend-10-hours-working-on-2/results/n5_k23_orbit_00_variable_grand_envelope_exact.json', '--output', '/private/tmp/n5-k23-orbit-05.eujxw8x8/envelope_cegar.json', '--iterations', '40', '--cuts-per-node', '20', '--tolerance', '1e-8'])"
+    },
+    {
+      "orbit": 6,
+      "error": "CalledProcessError(1, ['/Users/maxf/miniforge3/bin/python', 'n5_k23_envelope_cegar.py', '/private/tmp/n5-k23-orbit-06.hxmawux8/terminal_report.json', '--seed-reference', '/Users/maxf/Documents/Codex/2026-07-29/spend-10-hours-working-on-2/results/n5_k23_orbit_00_variable_grand_envelope_exact.json', '--output', '/private/tmp/n5-k23-orbit-06.hxmawux8/envelope_cegar.json', '--iterations', '40', '--cuts-per-node', '20', '--tolerance', '1e-8'])"
+    },
+    {
+      "orbit": 7,
+      "error": "CalledProcessError(1, ['/Users/maxf/miniforge3/bin/python', 'n5_k23_envelope_cegar.py', '/private/tmp/n5-k23-orbit-07.ywhvyb18/terminal_report.json', '--seed-reference', '/Users/maxf/Documents/Codex/2026-07-29/spend-10-hours-working-on-2/results/n5_k23_orbit_00_variable_grand_envelope_exact.json', '--output', '/private/tmp/n5-k23-orbit-07.ywhvyb18/envelope_cegar.json', '--iterations', '40', '--cuts-per-node', '20', '--tolerance', '1e-8'])"
+    },
+    {
+      "orbit": 8,
+      "error": "CalledProcessError(1, ['/Users/maxf/miniforge3/bin/python', 'n5_k23_envelope_cegar.py', '/private/tmp/n5-k23-orbit-08.l77dr4vn/terminal_report.json', '--seed-reference', '/Users/maxf/Documents/Codex/2026-07-29/spend-10-hours-working-on-2/results/n5_k23_orbit_00_variable_grand_envelope_exact.json', '--output', '/private/tmp/n5-k23-orbit-08.l77dr4vn/envelope_cegar.json', '--iterations', '40', '--cuts-per-node', '20', '--tolerance', '1e-8'])"
+    },
+    {
+      "orbit": 9,
+      "error": "CalledProcessError(1, ['/Users/maxf/miniforge3/bin/python', 'n5_k23_envelope_cegar.py', '/private/tmp/n5-k23-orbit-09.zf7lbow1/terminal_report.json', '--seed-reference', '/Users/maxf/Documents/Codex/2026-07-29/spend-10-hours-working-on-2/results/n5_k23_orbit_00_variable_grand_envelope_exact.json', '--output', '/private/tmp/n5-k23-orbit-09.zf7lbow1/envelope_cegar.json', '--iterations', '40', '--cuts-per-node', '20', '--tolerance', '1e-8'])"
+    },
+    {
+      "orbit": 10,
+      "error": "CalledProcessError(1, ['/Users/maxf/miniforge3/bin/python', 'n5_k23_envelope_cegar.py', '/private/tmp/n5-k23-orbit-10.9ajz6css/terminal_report.json', '--seed-reference', '/Users/maxf/Documents/Codex/2026-07-29/spend-10-hours-working-on-2/results/n5_k23_orbit_00_variable_grand_envelope_exact.json', '--output', '/private/tmp/n5-k23-orbit-10.9ajz6css/envelope_cegar.json', '--iterations', '40', '--cuts-per-node', '20', '--tolerance', '1e-8'])"
+    },
+    {
+      "orbit": 11,
+      "error": "CalledProcessError(1, ['/Users/maxf/miniforge3/bin/python', 'n5_k23_envelope_cegar.py', '/private/tmp/n5-k23-orbit-11.spv563l0/terminal_report.json', '--seed-reference', '/Users/maxf/Documents/Codex/2026-07-29/spend-10-hours-working-on-2/results/n5_k23_orbit_00_variable_grand_envelope_exact.json', '--output', '/private/tmp/n5-k23-orbit-11.spv563l0/envelope_cegar.json', '--iterations', '40', '--cuts-per-node', '20', '--tolerance', '1e-8'])"
+    },
+    {
+      "orbit": 12,
+      "error": "CalledProcessError(-15, ['/Users/maxf/miniforge3/bin/python', 'n5_perspective_envelope_certificate.py', '/private/tmp/n5-k23-orbit-12.h_90sos2/envelope_exact.json', '--generate-from-report', '/private/tmp/n5-k23-orbit-12.h_90sos2/terminal_report.json', '--link-support', '/private/tmp/n5-k23-orbit-12.h_90sos2/envelope_cegar.json', '--max-denominator', '1000000', '--zero-threshold', '0', '--topology-projection-epsilon', '1/10000000000'])"
+    },
+    {
+      "orbit": 13,
+      "error": "CalledProcessError(-15, ['/Users/maxf/miniforge3/bin/python', 'n5_perspective_envelope_certificate.py', '/private/tmp/n5-k23-orbit-13.dbcmfwy2/envelope_exact.json', '--generate-from-report', '/private/tmp/n5-k23-orbit-13.dbcmfwy2/terminal_report.json', '--link-support', '/private/tmp/n5-k23-orbit-13.dbcmfwy2/envelope_cegar.json', '--max-denominator', '1000000', '--zero-threshold', '0', '--topology-projection-epsilon', '1/10000000000'])"
+    },
+    {
+      "orbit": 3,
+      "error": "ValueError(\"'/private/tmp/n5-k23-orbit-03.rajibuni/envelope_exact.json' is not in the subpath of '/Users/maxf/Documents/Codex/2026-07-29/spend-10-hours-working-on-2' OR one path is relative and the other is absolute.\")"
+    },
+    {
+      "orbit": 15,
+      "error": "CalledProcessError(1, ['/Users/maxf/miniforge3/bin/python', 'n5_perspective_envelope_certificate.py', '/private/tmp/n5-k23-orbit-15.mophbg3k/envelope_exact.json', '--generate-from-report', '/private/tmp/n5-k23-orbit-15.mophbg3k/terminal_report.json', '--link-support', '/private/tmp/n5-k23-orbit-15.mophbg3k/envelope_cegar.json', '--max-denominator', '1000000', '--zero-threshold', '0', '--topology-projection-epsilon', '1/10000000000'])"
+    },
+    {
+      "orbit": 14,
+      "error": "CalledProcessError(1, ['/Users/maxf/miniforge3/bin/python', 'n5_perspective_envelope_certificate.py', '/private/tmp/n5-k23-orbit-14.k_45c7n6/envelope_exact.json', '--generate-from-report', '/private/tmp/n5-k23-orbit-14.k_45c7n6/terminal_report.json', '--link-support', '/private/tmp/n5-k23-orbit-14.k_45c7n6/envelope_cegar.json', '--max-denominator', '1000000', '--zero-threshold', '0', '--topology-projection-epsilon', '1/10000000000'])"
+    },
+    {
+      "orbit": 17,
+      "error": "CalledProcessError(-15, ['/Users/maxf/miniforge3/bin/python', 'n5_perspective_envelope_certificate.py', '/private/tmp/n5-k23-orbit-17._yyq9aqq/envelope_exact.json', '--generate-from-report', '/private/tmp/n5-k23-orbit-17._yyq9aqq/terminal_report.json', '--link-support', '/private/tmp/n5-k23-orbit-17._yyq9aqq/envelope_cegar.json', '--max-denominator', '1000000', '--zero-threshold', '0', '--topology-projection-epsilon', '1/10000000000'])"
+    },
+    {
+      "orbit": 18,
+      "error": "CalledProcessError(-15, ['/Users/maxf/miniforge3/bin/python', 'n5_perspective_envelope_certificate.py', '/private/tmp/n5-k23-orbit-18.ghcyp148/envelope_exact.json', '--generate-from-report', '/private/tmp/n5-k23-orbit-18.ghcyp148/terminal_report.json', '--link-support', '/private/tmp/n5-k23-orbit-18.ghcyp148/envelope_cegar.json', '--max-denominator', '1000000', '--zero-threshold', '0', '--topology-projection-epsilon', '1/10000000000'])"
+    },
+    {
+      "orbit": 16,
+      "error": "CalledProcessError(-15, ['/Users/maxf/miniforge3/bin/python', 'n5_perspective_envelope_certificate.py', '/private/tmp/n5-k23-orbit-16.yg4n_dd8/envelope_exact.json', '--generate-from-report', '/private/tmp/n5-k23-orbit-16.yg4n_dd8/terminal_report.json', '--link-support', '/private/tmp/n5-k23-orbit-16.yg4n_dd8/envelope_cegar.json', '--max-denominator', '1000000', '--zero-threshold', '0', '--topology-projection-epsilon', '1/10000000000'])"
+    },
+    {
+      "orbit": 19,
+      "error": "CalledProcessError(-15, ['/Users/maxf/miniforge3/bin/python', 'n5_perspective_envelope_certificate.py', '/private/tmp/n5-k23-orbit-19.7snu7kzp/envelope_exact.json', '--generate-from-report', '/private/tmp/n5-k23-orbit-19.7snu7kzp/terminal_report.json', '--link-support', '/private/tmp/n5-k23-orbit-19.7snu7kzp/envelope_cegar.json', '--max-denominator', '1000000', '--zero-threshold', '0', '--topology-projection-epsilon', '1/10000000000'])"
+    }
+  ]
+}

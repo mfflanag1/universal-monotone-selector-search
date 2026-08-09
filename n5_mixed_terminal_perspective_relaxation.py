@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from collections import defaultdict
 from fractions import Fraction
 from pathlib import Path
@@ -21,6 +22,13 @@ from scipy.optimize._highspy._core import (
     kHighsInf,
 )
 from scipy.sparse import vstack
+
+
+PROJECT_SRC = Path(
+    "/Users/maxf/projects/economics-research/game-theory/"
+    "exact-game-monotone-selection/src"
+)
+sys.path.insert(0, str(PROJECT_SRC))
 
 from n5_facet_search import load_facets
 from n5_mixed_terminal_branch_search import (
@@ -41,6 +49,13 @@ def main() -> int:
     parser.add_argument("--basis-support-output", type=Path)
     parser.add_argument("--float-support-input", type=Path)
     parser.add_argument("--skip-exact-reconstruction", action="store_true")
+    parser.add_argument("--variable-grand", action="store_true")
+    parser.add_argument(
+        "--method",
+        choices=("highs-ds", "highs-ipm", "highs"),
+        default="highs-ds",
+        help="SciPy/HiGHS algorithm used for the floating solve",
+    )
     args = parser.parse_args()
 
     report = json.loads(args.terminal_report.read_text())
@@ -99,9 +114,14 @@ def main() -> int:
         equalities.append({column(node, 0): 1.0})
         equality_rhs.append(0.0)
         equality_metadata.append(("empty", node))
-        equalities.append({column(node, grand): 1.0})
-        equality_rhs.append(1.0)
-        equality_metadata.append(("grand", node))
+        if args.variable_grand:
+            inequalities.append({column(node, grand): 1.0})
+            inequality_rhs.append(1.0)
+            inequality_metadata.append(("grand_upper", node))
+        else:
+            equalities.append({column(node, grand): 1.0})
+            equality_rhs.append(1.0)
+            equality_metadata.append(("grand", node))
         for facet_index, facet in enumerate(facets):
             inequalities.append(
                 {
@@ -185,16 +205,22 @@ def main() -> int:
             equality_metadata.append(
                 ("perspective_copy_empty", node, choice)
             )
-            equalities.append(
-                {
-                    copy_column(node, choice, grand): 1.0,
-                    choice_column(node, choice): -1.0,
-                }
-            )
-            equality_rhs.append(0.0)
-            equality_metadata.append(
-                ("perspective_copy_grand", node, choice)
-            )
+            grand_row = {
+                copy_column(node, choice, grand): 1.0,
+                choice_column(node, choice): -1.0,
+            }
+            if args.variable_grand:
+                inequalities.append(grand_row)
+                inequality_rhs.append(0.0)
+                inequality_metadata.append(
+                    ("perspective_copy_grand_upper", node, choice)
+                )
+            else:
+                equalities.append(grand_row)
+                equality_rhs.append(0.0)
+                equality_metadata.append(
+                    ("perspective_copy_grand", node, choice)
+                )
             for facet_index, facet in enumerate(facets):
                 inequalities.append(
                     {
@@ -252,7 +278,10 @@ def main() -> int:
             elif coefficient < 0:
                 mass = -coefficient
                 objective_exact[column(node, grand ^ coalition)] -= mass
-                objective_constant -= mass
+                if args.variable_grand:
+                    objective_exact[column(node, grand)] += mass
+                else:
+                    objective_constant -= mass
         else:
             divergence = [F(value) for value in terminal["scaled_divergence"]]
             low, high = sorted(set(divergence))
@@ -265,7 +294,12 @@ def main() -> int:
             objective_exact[column(node, grand)] -= low
     for node, choices in representations.items():
         for choice, (mu, coalitions) in enumerate(choices):
-            objective_exact[choice_column(node, choice)] -= mu
+            if args.variable_grand:
+                objective_exact[
+                    copy_column(node, choice, grand)
+                ] -= mu
+            else:
+                objective_exact[choice_column(node, choice)] -= mu
             for coalition, weight in coalitions:
                 objective_exact[
                     copy_column(node, choice, coalition)
@@ -280,7 +314,7 @@ def main() -> int:
             A_eq=sparse_matrix(equalities, variable_count),
             b_eq=np.asarray(equality_rhs),
             bounds=[(None, None)] * variable_count,
-            method="highs-ds",
+            method=args.method,
             options={
                 "dual_feasibility_tolerance": 1e-10,
                 "primal_feasibility_tolerance": 1e-10,
@@ -347,6 +381,8 @@ def main() -> int:
             else "mixed_terminal_perspective_relaxation_float"
         ),
         "source": str(args.terminal_report),
+        "variable_grand": args.variable_grand,
+        "solver_method": args.method,
         "terminal_count": len(terminals),
         "protected_terminal_pair_count": len(protected_players),
         "mixed_terminal_count": len(mixed),

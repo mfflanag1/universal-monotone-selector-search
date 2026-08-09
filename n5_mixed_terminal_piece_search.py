@@ -15,6 +15,8 @@ from scipy.optimize import linprog
 
 from n5_mixed_terminal_milp import lower_dual_vertices
 from n5_mixed_terminal_search import (
+    complete_bipartite_topology,
+    complete_bipartite_rectangular_topology,
     GameCone,
     four_cycle_topology,
     lower_expectation_dual,
@@ -26,19 +28,36 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--weights", type=int, nargs=4, default=(2, 1, 2, 1))
     parser.add_argument(
-        "--shape", choices=("four-cycle", "shared-sink"), default="four-cycle"
+        "--shape",
+        choices=("four-cycle", "shared-sink", "k23", "k33"),
+        default="four-cycle",
     )
+    parser.add_argument("--k33-masks", type=int, nargs=9)
+    parser.add_argument("--k23-masks", type=int, nargs=6)
     parser.add_argument("--samples", type=int, default=10_000)
     parser.add_argument("--seed", type=int, default=20260731)
     parser.add_argument("--exhaustive", action="store_true")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     rng = random.Random(args.seed)
-    topology = (
-        shared_sink_topology()
-        if args.shape == "shared-sink"
-        else four_cycle_topology(tuple(args.weights), 5)
-    )
+    if args.shape == "k33":
+        if args.k33_masks is None:
+            parser.error("--shape k33 requires --k33-masks")
+        topology = complete_bipartite_topology(
+            tuple(args.k33_masks), (1,) * 9, 3, 5
+        )
+    elif args.shape == "k23":
+        if args.k23_masks is None:
+            parser.error("--shape k23 requires --k23-masks")
+        topology = complete_bipartite_rectangular_topology(
+            tuple(args.k23_masks), (1,) * 6, 2, 3, 5
+        )
+    else:
+        topology = (
+            shared_sink_topology()
+            if args.shape == "shared-sink"
+            else four_cycle_topology(tuple(args.weights), 5)
+        )
     cone = GameCone(5, topology)
     candidate_sets = [
         lower_dual_vertices(divergence, 5)

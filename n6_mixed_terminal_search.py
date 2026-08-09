@@ -16,9 +16,12 @@ from scipy.optimize import linprog
 
 from n5_mixed_terminal_search import (
     Topology,
+    bipartite_six_cycle_topology,
+    block_square_topology,
     lower_expectation_dual,
     random_topology,
     sparse_matrix,
+    weighted_bipartite_six_cycle_topology,
 )
 
 
@@ -66,7 +69,12 @@ def load_facets(path: Path = DEFAULT_CATALOGUE) -> list[tuple[int, ...]]:
 
 
 class GameCone6:
-    def __init__(self, topology: Topology, facets: list[tuple[int, ...]]) -> None:
+    def __init__(
+        self,
+        topology: Topology,
+        facets: list[tuple[int, ...]],
+        variable_grand: bool = False,
+    ) -> None:
         self.node_count = topology.node_count
         self.coalition_count = 1 << N
         self.variable_count = self.node_count * self.coalition_count
@@ -77,8 +85,9 @@ class GameCone6:
         for node in range(self.node_count):
             equalities.append({self.column(node, 0): 1.0})
             equality_rhs.append(0.0)
-            equalities.append({self.column(node, GRAND): 1.0})
-            equality_rhs.append(1.0)
+            if not variable_grand:
+                equalities.append({self.column(node, GRAND): 1.0})
+                equality_rhs.append(1.0)
             for facet in facets:
                 inequalities.append(
                     {
@@ -139,8 +148,9 @@ def optimize(
     rng: random.Random,
     starts: int,
     iterations: int,
+    variable_grand: bool = False,
 ) -> dict[str, Any] | None:
-    cone = GameCone6(topology, facets)
+    cone = GameCone6(topology, facets, variable_grand=variable_grand)
     best = None
     seed_points = (
         (4.0, 2.0, 5.0, 12.0, 19.0, 9.0),
@@ -212,17 +222,52 @@ def main() -> int:
     parser.add_argument("--iterations", type=int, default=8)
     parser.add_argument("--seed", type=int, default=20260731)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--block-square", action="store_true")
+    parser.add_argument("--six-cycle", action="store_true")
+    parser.add_argument("--weighted-six-cycle", action="store_true")
+    parser.add_argument("--variable-grand", action="store_true")
     args = parser.parse_args()
     facets = load_facets()
     rng = random.Random(args.seed)
     best = []
     tested = 0
     while tested < args.samples:
-        topology = random_topology(N, args.nodes, rng)
+        topology = (
+            weighted_bipartite_six_cycle_topology(
+                tuple(rng.sample(range(1, GRAND), 6)),
+                tuple(rng.randint(1, 3) for _ in range(6)),
+                N,
+            )
+            if args.weighted_six_cycle
+            else
+            bipartite_six_cycle_topology(
+                tuple(rng.sample(range(1, GRAND), 6)), N
+            )
+            if args.six_cycle
+            else
+            block_square_topology(
+                tuple(rng.sample(range(1, GRAND), 4)), N
+            )
+            if args.block_square
+            else random_topology(N, args.nodes, rng)
+        )
         if topology is None:
             continue
+        if (
+            args.block_square or args.six_cycle or args.weighted_six_cycle
+        ) and any(
+            len(set(divergence)) < 3 for divergence in topology.divergence
+        ):
+            continue
         tested += 1
-        optimum = optimize(topology, facets, rng, args.starts, args.iterations)
+        optimum = optimize(
+            topology,
+            facets,
+            rng,
+            args.starts,
+            args.iterations,
+            args.variable_grand,
+        )
         if optimum is None:
             continue
         row = {
@@ -243,6 +288,10 @@ def main() -> int:
             else "no_positive_terminal_obstruction_found"
         ),
         "facet_count": len(facets),
+        "block_square": args.block_square,
+        "six_cycle": args.six_cycle,
+        "weighted_six_cycle": args.weighted_six_cycle,
+        "variable_grand": args.variable_grand,
         "tested": tested,
         "configuration": vars(args) | {"output": str(args.output)},
         "best": best,
